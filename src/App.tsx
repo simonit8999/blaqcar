@@ -82,7 +82,7 @@ export default function App() {
       {/* HERO ЭКРАН (z-0) */}
       <div 
         className="absolute inset-0 z-0" 
-        inert={step !== 0} // <--- ИСПРАВЛЕНО ТУТ (boolean вместо string)
+        inert={step !== 0} // <--- ИСПРАВЛЕНО
       >
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>
@@ -99,6 +99,7 @@ export default function App() {
               animate="center"
               exit="exit"
               transition={transition}
+              /* ВАЖНО: bg-ink перекрывает Audi */
               className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto overflow-hidden"
             >
               <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />

@@ -46,7 +46,6 @@ export default function App() {
 
   usePwaTheme('#050505')
 
-  // Предзагрузка картинок (оставляем как было)
   useEffect(() => {
     if (!config) return
     const images: HTMLImageElement[] = []
@@ -114,7 +113,7 @@ export default function App() {
               exit="exit"
               transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
               /* Убрали bg-ink, чтобы просвечивал фон BMW */
-              className="absolute inset-0 w-full h-full flex flex-col pointer-events-auto bg-transparent"
+              className="absolute inset-0 w-full h-full flex flex-col pointer-events-auto"
             >
               <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
               <ProgressBar step={step} total={4} />

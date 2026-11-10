@@ -11,9 +11,6 @@ interface Props {
 
 const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.05 } } }
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } } }
-
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
   return (
     <div className="flex flex-col h-full bg-ink overflow-hidden">
@@ -22,14 +19,14 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
         <p className="mt-1.5 text-zincsoft text-sm">Всё, что нужно вашему авто — в одном месте</p>
       </div>
 
+      {/* Убрали motion.div с анимацией, теперь просто div */}
       <div className="flex-1 overflow-y-auto px-5 pb-4">
-        <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-3.5">
           {config.services.map((s) => {
             const active = selected?.id === s.id
             return (
               <motion.button
                 key={s.id}
-                variants={item}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onSelect(s)}
                 className={`relative overflow-hidden rounded-2xl border text-left transition-colors duration-200 ${
@@ -37,17 +34,22 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                 }`}
                 style={{ minHeight: 120 }}
               >
-                {/* ФИКС: background-image вместо img и жесткая фиксация слоя */}
-                <div 
-                  className="absolute inset-0 -z-10 bg-cover bg-center"
-                  style={{ 
-                    backgroundImage: `url("${s.image}")`,
-                    transform: 'translateZ(0)',
-                    backfaceVisibility: 'hidden'
-                  }} 
-                />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
+                <div className="absolute inset-0 -z-10">
+                  {/* Жесткая фиксация картинки */}
+                  <img 
+                    src={s.image} 
+                    alt="" 
+                    className="w-full h-full object-cover" 
+                    style={{ 
+                      transform: 'translateZ(0)', 
+                      backfaceVisibility: 'hidden',
+                      willChange: 'transform'
+                    }} 
+                    draggable={false} 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
+                </div>
 
                 <div className="relative p-4 flex flex-col justify-between min-h-[120px]">
                   <div className="flex items-start justify-between gap-3">
@@ -70,7 +72,7 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
               </motion.button>
             )
           })}
-        </motion.div>
+        </div>
       </div>
 
       <div className="shrink-0 p-5 pb-safe bg-ink border-t border-white/5">

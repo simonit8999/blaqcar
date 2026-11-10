@@ -26,19 +26,16 @@ const initialBooking: BookingData = {
   time: null,
 }
 
-// ВАРИАНТЫ АНИМАЦИИ ДЛЯ СЛАЙДОВ
-const variants = {
+// Анимация слайдов для экранов услуг (шаги 1-4)
+const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
-    opacity: 0,
   }),
   center: {
     x: 0,
-    opacity: 1,
   },
   exit: (direction: number) => ({
-    x: direction > 0 ? '-30%' : '100%',
-    opacity: 0,
+    x: direction > 0 ? '-100%' : '100%',
   }),
 }
 
@@ -79,7 +76,7 @@ export default function App() {
   const headerTitles = ['', 'Услуга', 'Данные', 'Время', 'Подтверждение']
 
   return (
-    <div className="relative min-h-[100dvh] bg-ink text-white overflow-hidden">
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
       {/* Скрытый прелоадер */}
       <div className="hidden" aria-hidden="true">
@@ -89,72 +86,63 @@ export default function App() {
         ))}
       </div>
 
-      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-        
-        {/* ЭКРАН 0 (Hero) */}
-        {step === 0 && (
-          <motion.div
-            key="hero"
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.4 }}
-            className="absolute inset-0 w-full bg-ink"
-            style={{ minHeight: '100dvh' }}
-          >
-            <Screen1Hero config={config} onStart={() => go(1)} />
-          </motion.div>
-        )}
+      {/* 1. HERO ЭКРАН: Всегда в DOM, на самом нижнем слое (z-0) */}
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{ pointerEvents: step === 0 ? 'auto' : 'none' }}
+      >
+        <Screen1Hero config={config} onStart={() => go(1)} />
+      </div>
 
-        {/* ЭКРАНЫ 1-4 (Wizard) */}
-        {step !== 0 && (
-          <motion.div
-            key={step}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.4 }}
-            className="absolute inset-0 w-full flex flex-col bg-ink"
-            style={{ minHeight: '100dvh' }}
-          >
-            <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
-            <ProgressBar step={step} total={4} />
+      {/* 2. КОНТЕЙНЕР ДЛЯ УСЛУГ: Поверх Hero (z-10) */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
+          {step !== 0 && (
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
+              className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto"
+            >
+              <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
+              <ProgressBar step={step} total={4} />
 
-            <div className="relative flex-1 overflow-hidden">
-              {step === 1 && (
-                <Screen2Service
-                  config={config}
-                  selected={booking.service}
-                  onSelect={selectService}
-                  onNext={() => go(2)}
-                />
-              )}
-              {step === 2 && (
-                <Screen3Details
-                  data={booking}
-                  onChange={update}
-                  onNext={() => go(3)}
-                />
-              )}
-              {step === 3 && (
-                <Screen4Time
-                  config={config}
-                  date={booking.date}
-                  time={booking.time}
-                  onDate={(d) => update({ date: d })}
-                  onTime={(t) => update({ time: t })}
-                  onNext={() => go(4)}
-                />
-              )}
-              {step === 4 && <Screen5Confirm config={config} data={booking} />}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="relative flex-1 overflow-hidden">
+                {step === 1 && (
+                  <Screen2Service
+                    config={config}
+                    selected={booking.service}
+                    onSelect={selectService}
+                    onNext={() => go(2)}
+                  />
+                )}
+                {step === 2 && (
+                  <Screen3Details
+                    data={booking}
+                    onChange={update}
+                    onNext={() => go(3)}
+                  />
+                )}
+                {step === 3 && (
+                  <Screen4Time
+                    config={config}
+                    date={booking.date}
+                    time={booking.time}
+                    onDate={(d) => update({ date: d })}
+                    onTime={(t) => update({ time: t })}
+                    onNext={() => go(4)}
+                  />
+                )}
+                {step === 4 && <Screen5Confirm config={config} data={booking} />}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

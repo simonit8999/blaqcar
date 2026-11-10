@@ -22,17 +22,20 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
     ;(window as any).__serviceImages = imgs
   }, [config.services])
 
+  // Берем картинку для фона (например, третью услугу с BMW)
+  const bgImage = config.services[2]?.image || config.hero_image
+
   return (
-    <div className="flex flex-col h-full overflow-hidden relative">
+    <div className="flex flex-col h-full overflow-hidden relative bg-ink">
       
-      {/* ФОН BMW ДЛЯ ЭТОГО ЭКРАНА (берем картинку из hero_image) */}
+      {/* ФОН ДЛЯ ЭТОГО ЭКРАНА (BMW) */}
       <div className="absolute inset-0 z-0">
         <img 
-          src={config.hero_image} 
+          src={bgImage} 
           alt="" 
-          className="w-full h-full object-cover opacity-30" // Делаем полупрозрачным, чтобы не отвлекал
+          className="w-full h-full object-cover opacity-40" 
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/95 to-ink" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/90 to-ink" />
       </div>
 
       {/* Контент поверх фона */}
@@ -51,7 +54,7 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                   type="button"
                   key={s.id}
                   onClick={() => onSelect(s)}
-                  className="relative overflow-hidden rounded-2xl border text-left cursor-pointer bg-ink/60 backdrop-blur-sm"
+                  className="relative overflow-hidden rounded-2xl border text-left cursor-pointer bg-ink/60 backdrop-blur-md"
                   style={{
                     minHeight: 120,
                     borderColor: active ? 'var(--accent)' : 'rgba(255,255,255,0.1)',

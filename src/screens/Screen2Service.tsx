@@ -17,7 +17,6 @@ const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transiti
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
   return (
     <div className="flex flex-col h-full bg-ink overflow-hidden">
-      
       <div className="pt-2 pb-4 px-5 shrink-0">
         <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">Выберите услугу</h1>
         <p className="mt-1.5 text-zincsoft text-sm">Всё, что нужно вашему авто — в одном месте</p>
@@ -38,12 +37,12 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                 }`}
                 style={{ minHeight: 120 }}
               >
-                {/* Картинка через background-image. Chrome её не выгружает так, как тег <img> */}
+                {/* ФИКС: background-image вместо img и жесткая фиксация слоя */}
                 <div 
                   className="absolute inset-0 -z-10 bg-cover bg-center"
                   style={{ 
                     backgroundImage: `url("${s.image}")`,
-                    transform: 'translateZ(0)', // Принудительно держим в памяти видеокарты
+                    transform: 'translateZ(0)',
                     backfaceVisibility: 'hidden'
                   }} 
                 />

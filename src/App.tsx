@@ -31,16 +31,14 @@ const HEADER_TITLES: Record<number, string> = { 0: '', 1: 'Услуга', 2: 'Д
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
-    opacity: 0.6,
   }),
-  center: { x: 0, opacity: 1 },
+  center: { x: 0 },
   exit: (direction: number) => ({
     x: direction > 0 ? '-100%' : '100%',
-    opacity: 0.6,
   }),
 }
 
-const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.42 }
+const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.4 }
 
 export default function App() {
   const { config, error } = useConfig()
@@ -79,18 +77,16 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* HERO ЭКРАН (z-0) */}
+      {/* Hero экран (Audi) */}
       <div 
         className="absolute inset-0 z-0" 
-        inert={step !== 0}
+        style={{ pointerEvents: step === 0 ? 'auto' : 'none' }}
       >
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>
 
-      {/* ЭКРАНЫ УСЛУГ (z-10) */}
-      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden bg-ink"> 
-        {/* ^^^ ДОБАВИЛИ bg-ink сюда, чтобы подложка была черной */}
-        
+      {/* Экраны услуг (с bg-ink, чтобы перекрыть Audi) */}
+      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden bg-ink">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           {step !== 0 && (
             <motion.div
@@ -101,7 +97,6 @@ export default function App() {
               animate="center"
               exit="exit"
               transition={transition}
-              /* У каждого экрана тоже есть bg-ink */
               className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto overflow-hidden"
             >
               <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />

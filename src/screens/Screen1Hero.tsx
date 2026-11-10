@@ -37,14 +37,16 @@ export default function Screen1Hero({ config, onStart }: Props) {
 
   return (
     <div className="relative w-full overflow-hidden" style={{ minHeight: '100dvh' }}>
+      {/* ФИКС: background-image вместо img */}
       <div className="absolute inset-0 -z-10">
-        <img
-          src={config.hero_image}
-          alt={config.business_name}
-          className={`w-full h-full object-cover select-none pointer-events-none transition-opacity duration-300 ${imgReady ? 'opacity-100' : 'opacity-0'}`}
-          draggable={false}
-          decoding="async"
-          fetchPriority="high"
+        <div 
+          className="w-full h-full bg-cover bg-center transition-opacity duration-300"
+          style={{ 
+            backgroundImage: `url("${config.hero_image}")`,
+            opacity: imgReady ? 1 : 0,
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden'
+          }} 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-transparent to-transparent" />

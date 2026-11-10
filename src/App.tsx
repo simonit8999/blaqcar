@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfig } from './hooks/useConfig'
 import { usePwaTheme } from './hooks/usePwa'
@@ -46,21 +46,6 @@ export default function App() {
 
   usePwaTheme('#050505')
 
-  useEffect(() => {
-    if (!config) return
-    const images: HTMLImageElement[] = []
-    const hero = new Image()
-    hero.src = config.hero_image
-    images.push(hero)
-    config.services.forEach((s) => {
-      const img = new Image()
-      img.src = s.image
-      images.push(img)
-    })
-    ;(window as any).__preloadedImages = images
-    return () => { ;(window as any).__preloadedImages = null }
-  }, [config])
-
   if (error) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center p-6 text-center">
@@ -92,48 +77,54 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* Hero-экран (всегда в DOM, на самом нижнем слое) */}
-      <div 
-        className="absolute inset-0 z-0" 
-        style={{ pointerEvents: step === 0 ? 'auto' : 'none' }}
-      >
-        <Screen1Hero config={config} onStart={() => go(1)} />
-      </div>
+      <AnimatePresence mode="wait" initial={false} custom={direction}>
+        
+        {/* ЭКРАН 0 (Hero с Audi) */}
+        {step === 0 && (
+          <motion.div
+            key="hero"
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
+            className="absolute inset-0 w-full h-full bg-ink"
+          >
+            <Screen1Hero config={config} onStart={() => go(1)} />
+          </motion.div>
+        )}
 
-      {/* Контейнер с экранами услуг (поверх Hero) */}
-      <div className="absolute inset-0 z-10 pointer-events-none">
-        <AnimatePresence mode="wait" initial={false} custom={direction}>
-          {step !== 0 && (
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
-              /* Убрали bg-ink, чтобы просвечивал фон BMW */
-              className="absolute inset-0 w-full h-full flex flex-col pointer-events-auto"
-            >
-              <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
-              <ProgressBar step={step} total={4} />
+        {/* ЭКРАНЫ 1-4 (Wizard) */}
+        {step !== 0 && (
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
+            className="absolute inset-0 w-full h-full flex flex-col bg-ink" // <--- bg-ink вернули, чтобы на 3,4,5 был черный фон
+          >
+            <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
+            <ProgressBar step={step} total={4} />
 
-              <div className="relative flex-1 overflow-hidden">
-                {step === 1 && (
-                  <Screen2Service config={config} selected={booking.service} onSelect={selectService} onNext={() => go(2)} />
-                )}
-                {step === 2 && (
-                  <Screen3Details data={booking} onChange={update} onNext={() => go(3)} />
-                )}
-                {step === 3 && (
-                  <Screen4Time config={config} date={booking.date} time={booking.time} onDate={(d) => update({ date: d })} onTime={(t) => update({ time: t })} onNext={() => go(4)} />
-                )}
-                {step === 4 && <Screen5Confirm config={config} data={booking} />}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            <div className="relative flex-1 overflow-hidden">
+              {step === 1 && (
+                <Screen2Service config={config} selected={booking.service} onSelect={selectService} onNext={() => go(2)} />
+              )}
+              {step === 2 && (
+                <Screen3Details data={booking} onChange={update} onNext={() => go(3)} />
+              )}
+              {step === 3 && (
+                <Screen4Time config={config} date={booking.date} time={booking.time} onDate={(d) => update({ date: d })} onTime={(t) => update({ time: t })} onNext={() => go(4)} />
+              )}
+              {step === 4 && <Screen5Confirm config={config} data={booking} />}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

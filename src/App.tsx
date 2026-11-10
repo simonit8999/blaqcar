@@ -78,11 +78,11 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* Скрытый прелоадер */}
+      {/* Скрытый прелоадер (с crossOrigin и decoding="sync" для удержания в памяти) */}
       <div className="hidden" aria-hidden="true">
-        <img src={config.hero_image} alt="" fetchPriority="high" decoding="sync" />
+        <img src={config.hero_image} alt="" fetchPriority="high" decoding="sync" crossOrigin="anonymous" />
         {config.services.map((s) => (
-          <img key={s.id} src={s.image} alt="" decoding="async" />
+          <img key={s.id} src={s.image} alt="" decoding="sync" crossOrigin="anonymous" />
         ))}
       </div>
 

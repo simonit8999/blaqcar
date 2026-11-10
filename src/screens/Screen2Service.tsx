@@ -13,33 +13,34 @@ interface Props {
 const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
 
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
-  // Предзагрузка картинок прямо в компоненте
   useEffect(() => {
     const imgs = config.services.map((s) => {
       const img = new Image()
       img.src = s.image
       return img
     })
-    // Сохраняем ссылки в window, чтобы браузер их не выгружал
     ;(window as any).__serviceImages = imgs
   }, [config.services])
 
   return (
     <div className="flex flex-col h-full bg-ink overflow-hidden">
-      <div className="pt-2 pb-4 px-5 shrink-0">
+      
+      {/* Шапка с полупрозрачным фоном */}
+      <div className="pt-2 pb-4 px-5 shrink-0 bg-ink/90 backdrop-blur-md z-10 relative">
         <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">Выберите услугу</h1>
         <p className="mt-1.5 text-zincsoft text-sm">Всё, что нужно вашему авто — в одном месте</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 pb-4">
+      <div className="flex-1 overflow-y-auto px-5 pb-4 bg-transparent">
         <div className="flex flex-col gap-3.5">
           {config.services.map((s) => {
             const active = selected?.id === s.id
             return (
               <button
+                type="button" // <--- ВАЖНО
                 key={s.id}
                 onClick={() => onSelect(s)}
-                className="relative overflow-hidden rounded-2xl border text-left"
+                className="relative overflow-hidden rounded-2xl border text-left cursor-pointer"
                 style={{
                   minHeight: 120,
                   borderColor: active ? 'var(--accent)' : 'rgba(255,255,255,0.1)',
@@ -47,7 +48,6 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                   transition: 'border-color 0.2s, box-shadow 0.2s'
                 }}
               >
-                {/* Убрали -z-10, картинка теперь лежит под контентом, но над фоном */}
                 <div className="absolute inset-0">
                   <img 
                     src={s.image} 
@@ -57,12 +57,10 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                     draggable={false}
                     loading="eager"
                   />
-                  {/* Градиенты для читаемости текста */}
                   <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
                 </div>
 
-                {/* Контент поверх картинки */}
                 <div className="relative p-4 flex flex-col justify-between min-h-[120px] z-10">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-display font-bold text-lg uppercase tracking-tight leading-tight">{s.name}</h3>
@@ -87,12 +85,14 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
         </div>
       </div>
 
-      <div className="shrink-0 p-5 pb-safe bg-ink border-t border-white/5">
+      {/* Подвал с полупрозрачным фоном */}
+      <div className="shrink-0 p-5 pb-safe bg-ink/90 backdrop-blur-md border-t border-white/5 z-10 relative">
         <motion.button
+          type="button" // <--- ВАЖНО
           whileTap={{ scale: 0.96 }}
           disabled={!selected}
           onClick={onNext}
-          className={`w-full h-14 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 transition-all ${
+          className={`w-full h-14 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 transition-all cursor-pointer ${
             selected ? 'bg-accent text-ink shadow-glow' : 'bg-white/[0.06] text-white/30 cursor-not-allowed'
           }`}
         >

@@ -86,7 +86,7 @@ export default function App() {
       </div>
 
       {/* 2. ЭКРАНЫ УСЛУГ (поверх Hero, z-10) */}
-      <div className="absolute inset-0 z-10 pointer-events-none">
+      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           {step !== 0 && (
             <motion.div
@@ -97,8 +97,8 @@ export default function App() {
               animate="center"
               exit="exit"
               transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.4 }}
-              /* ВАЖНО: bg-ink делает фон экрана непрозрачным, чтобы Audi не просвечивала */
-              className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto"
+              /* bg-ink делает фон экрана непрозрачным, чтобы Audi не просвечивала */
+              className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto overflow-hidden"
             >
               <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
               <ProgressBar step={step} total={4} />

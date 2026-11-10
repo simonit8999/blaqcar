@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Car, Hash, User, MessageSquare, Phone } from 'lucide-react'
+import { IMaskInput } from 'react-imask'
 import type { BookingData } from '../types'
 
 interface Props {
@@ -12,6 +13,7 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } 
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
 
 export default function Screen3Details({ data, onChange, onNext }: Props) {
+  // Проверяем, что телефон заполнен хотя бы до 11 цифр
   const valid = data.carModel.trim().length > 0 && data.name.trim().length > 0 && data.phone.replace(/\D/g, '').length >= 11
 
   return (
@@ -31,7 +33,14 @@ export default function Screen3Details({ data, onChange, onNext }: Props) {
           </Field>
 
           <Field variants={item} icon={<Phone className="w-4 h-4" />} label="Номер телефона *">
-            <input type="tel" value={data.phone} onChange={(e) => onChange({ phone: e.target.value })} placeholder="+7 (999) 000-00-00" className="w-full bg-transparent outline-none text-[15px] placeholder:text-white/25" />
+            <IMaskInput
+              mask="+7 (000) 000-00-00"
+              value={data.phone}
+              unmask={false}
+              onAccept={(value: string) => onChange({ phone: value })}
+              placeholder="+7 (999) 000-00-00"
+              className="w-full bg-transparent outline-none text-[15px] placeholder:text-white/25"
+            />
           </Field>
 
           <Field variants={item} icon={<Car className="w-4 h-4" />} label="Марка и модель *">

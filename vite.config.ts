@@ -3,5 +3,9 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  build: { outDir: 'dist', assetsDir: '' }
+  publicDir: 'public', // Жестко указываем, где лежит папка public
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true, // Очищаем dist перед сборкой
+  }
 })

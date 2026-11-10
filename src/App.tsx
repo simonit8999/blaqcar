@@ -79,10 +79,10 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* HERO ЭКРАН (z-0) - Используем inert для отключения кликов */}
+      {/* HERO ЭКРАН (z-0) */}
       <div 
         className="absolute inset-0 z-0" 
-        inert={step !== 0 ? "" : undefined}
+        inert={step !== 0} // <--- ИСПРАВЛЕНО ТУТ (boolean вместо string)
       >
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>

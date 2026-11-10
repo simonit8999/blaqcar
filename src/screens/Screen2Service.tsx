@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Check, ArrowRight } from 'lucide-react'
 import type { AppConfig, Service } from '../types'
@@ -12,6 +13,12 @@ interface Props {
 const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
 
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
+  // ЛОГ ДЛЯ ПРОВЕРКИ ГИПОТЕЗЫ
+  useEffect(() => {
+    console.log('Screen2Service Mounted');
+    return () => console.log('Screen2Service Unmounted');
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-ink overflow-hidden">
       <div className="pt-2 pb-4 px-5 shrink-0">
@@ -19,7 +26,6 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
         <p className="mt-1.5 text-zincsoft text-sm">Всё, что нужно вашему авто — в одном месте</p>
       </div>
 
-      {/* Убрали motion.div с анимацией, теперь просто div */}
       <div className="flex-1 overflow-y-auto px-5 pb-4">
         <div className="flex flex-col gap-3.5">
           {config.services.map((s) => {
@@ -35,7 +41,6 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                 style={{ minHeight: 120 }}
               >
                 <div className="absolute inset-0 -z-10">
-                  {/* Жесткая фиксация картинки */}
                   <img 
                     src={s.image} 
                     alt="" 

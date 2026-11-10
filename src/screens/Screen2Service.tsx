@@ -12,7 +12,6 @@ interface Props {
 
 const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
 
-// Мемоизированная карточка для оптимизации рендеринга
 const ServiceCard = memo(function ServiceCard({
   service, active, onSelect,
 }: { service: Service; active: boolean; onSelect: (s: Service) => void }) {
@@ -81,12 +80,13 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
   const bgImage = config.services[2]?.image || config.hero_image
 
   return (
+    /* ГЛАВНЫЙ ФИКС: bg-ink (черный фон) перекрывает Audi */
     <div className="flex flex-col h-full overflow-hidden relative bg-ink">
       
-      {/* ФОН ДЛЯ ЭТОГО ЭКРАНА */}
+      {/* ФОН ДЛЯ ЭТОГО ЭКРАНА (BMW) */}
       <div className="absolute inset-0 z-0">
-        <img src={bgImage} alt="" className="w-full h-full object-cover opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/90 to-ink" />
+        <img src={bgImage} alt="" className="w-full h-full object-cover opacity-20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-ink/95 to-ink" />
       </div>
 
       {/* Контент поверх фона */}

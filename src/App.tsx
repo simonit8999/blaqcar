@@ -26,17 +26,21 @@ const initialBooking: BookingData = {
   time: null,
 }
 
+const HEADER_TITLES: Record<number, string> = { 0: '', 1: 'Услуга', 2: 'Данные', 3: 'Время', 4: 'Подтверждение' }
+
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
+    opacity: 0.6,
   }),
-  center: {
-    x: 0,
-  },
+  center: { x: 0, opacity: 1 },
   exit: (direction: number) => ({
     x: direction > 0 ? '-100%' : '100%',
+    opacity: 0.6,
   }),
 }
+
+const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.42 }
 
 export default function App() {
   const { config, error } = useConfig()
@@ -72,20 +76,18 @@ export default function App() {
   const update = (patch: Partial<BookingData>) => setBooking((b) => ({ ...b, ...patch }))
   const selectService = (s: Service) => update({ service: s })
 
-  const headerTitles = ['', 'Услуга', 'Данные', 'Время', 'Подтверждение']
-
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* 1. HERO ЭКРАН (Audi) - Всегда на заднем плане (z-0) */}
+      {/* HERO ЭКРАН (z-0) - Используем inert для отключения кликов */}
       <div 
         className="absolute inset-0 z-0" 
-        style={{ pointerEvents: step === 0 ? 'auto' : 'none' }}
+        inert={step !== 0 ? "" : undefined}
       >
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>
 
-      {/* 2. ЭКРАНЫ УСЛУГ (поверх Hero, z-10) */}
+      {/* ЭКРАНЫ УСЛУГ (z-10) */}
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           {step !== 0 && (
@@ -96,11 +98,10 @@ export default function App() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.4 }}
-              /* bg-ink делает фон экрана непрозрачным, чтобы Audi не просвечивала */
+              transition={transition}
               className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto overflow-hidden"
             >
-              <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
+              <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />
               <ProgressBar step={step} total={4} />
 
               <div className="relative flex-1 overflow-hidden">

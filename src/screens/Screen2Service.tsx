@@ -38,18 +38,17 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                 }`}
                 style={{ minHeight: 120 }}
               >
-                <div className="absolute inset-0 -z-10">
-                  {/* ФИКС КАРТИНОК: translateZ и backface-hidden не дают браузеру выгружать их из памяти */}
-                  <img 
-                    src={s.image} 
-                    alt="" 
-                    className="w-full h-full object-cover backface-hidden" 
-                    style={{ transform: 'translateZ(0)' }}
-                    draggable={false} 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
-                </div>
+                {/* Картинка через background-image. Chrome её не выгружает так, как тег <img> */}
+                <div 
+                  className="absolute inset-0 -z-10 bg-cover bg-center"
+                  style={{ 
+                    backgroundImage: `url("${s.image}")`,
+                    transform: 'translateZ(0)', // Принудительно держим в памяти видеокарты
+                    backfaceVisibility: 'hidden'
+                  }} 
+                />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
 
                 <div className="relative p-4 flex flex-col justify-between min-h-[120px]">
                   <div className="flex items-start justify-between gap-3">

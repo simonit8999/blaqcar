@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Check, ArrowRight } from 'lucide-react'
 import type { AppConfig, Service } from '../types'
@@ -12,6 +13,17 @@ interface Props {
 const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
 
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
+  // Предзагрузка картинок прямо в компоненте
+  useEffect(() => {
+    const imgs = config.services.map((s) => {
+      const img = new Image()
+      img.src = s.image
+      return img
+    })
+    // Сохраняем ссылки в window, чтобы браузер их не выгружал
+    ;(window as any).__serviceImages = imgs
+  }, [config.services])
+
   return (
     <div className="flex flex-col h-full bg-ink overflow-hidden">
       <div className="pt-2 pb-4 px-5 shrink-0">
@@ -35,7 +47,8 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                   transition: 'border-color 0.2s, box-shadow 0.2s'
                 }}
               >
-                <div className="absolute inset-0 -z-10">
+                {/* Убрали -z-10, картинка теперь лежит под контентом, но над фоном */}
+                <div className="absolute inset-0">
                   <img 
                     src={s.image} 
                     alt="" 
@@ -44,11 +57,13 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                     draggable={false}
                     loading="eager"
                   />
+                  {/* Градиенты для читаемости текста */}
                   <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
                 </div>
 
-                <div className="relative p-4 flex flex-col justify-between min-h-[120px]">
+                {/* Контент поверх картинки */}
+                <div className="relative p-4 flex flex-col justify-between min-h-[120px] z-10">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-display font-bold text-lg uppercase tracking-tight leading-tight">{s.name}</h3>
                     <div className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${

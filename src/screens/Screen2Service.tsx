@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { Clock, Check, ArrowRight } from 'lucide-react'
 import type { AppConfig, Service } from '../types'
 
@@ -22,7 +21,7 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
     ;(window as any).__serviceImages = imgs
   }, [config.services])
 
-  // Берем BMW для фона (например, 3-ю услугу)
+  // Берем картинку для фона (например, третью услугу с BMW)
   const bgImage = config.services[2]?.image || config.hero_image
 
   return (
@@ -94,9 +93,8 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
         </div>
 
         <div className="shrink-0 p-5 pb-safe bg-ink/80 backdrop-blur-md border-t border-white/5">
-          <motion.button
+          <button
             type="button"
-            whileTap={{ scale: 0.96 }}
             disabled={!selected}
             onClick={onNext}
             className={`w-full h-14 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 transition-all cursor-pointer ${
@@ -104,7 +102,7 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
             }`}
           >
             Далее <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-          </motion.button>
+          </button>
         </div>
       </div>
     </div>

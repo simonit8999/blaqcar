@@ -47,7 +47,7 @@ export default function Screen4Time({ config, date, time, onDate, onTime, onNext
   }, [config])
 
   return (
-    <div className="flex-1 flex flex-col px-5 pb-6">
+    <div className="flex-1 flex flex-col px-5 pb-6 h-full">
       <div className="pt-2 pb-5">
         <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">
           Когда вам удобно?
@@ -55,7 +55,6 @@ export default function Screen4Time({ config, date, time, onDate, onTime, onNext
         <p className="mt-1.5 text-zincsoft text-sm">Выберите день и время визита</p>
       </div>
 
-      {/* Calendar */}
       <div className="flex items-center gap-2 mb-3 text-[11px] uppercase tracking-[0.16em] text-zincsoft font-medium">
         <CalendarDays className="w-3.5 h-3.5" /> Дата
       </div>
@@ -65,32 +64,16 @@ export default function Screen4Time({ config, date, time, onDate, onTime, onNext
           const active = date === key
           const today = i === 0
           return (
-            <motion.button
-              key={key}
-              whileTap={{ scale: 0.94 }}
-              onClick={() => { onDate(key); onTime('') }}
-              className={`shrink-0 w-[72px] rounded-2xl border flex flex-col items-center justify-center py-3 transition-all ${
-                active
-                  ? 'bg-accent border-accent text-white shadow-glow'
-                  : 'bg-surface/60 border-white/10 text-white hover:border-white/25'
-              }`}
-            >
-              <span className={`text-[10px] uppercase tracking-wider ${active ? 'text-white/85' : 'text-zincsoft'}`}>
-                {today ? 'Сегодня' : WEEKDAYS[d.getDay()]}
-              </span>
-              <span className="font-display font-extrabold text-lg leading-tight mt-0.5">
-                {d.getDate()}
-              </span>
-              <span className={`text-[10px] ${active ? 'text-white/85' : 'text-zincsoft'}`}>
-                {MONTHS[d.getMonth()]}
-              </span>
+            <motion.button key={key} whileTap={{ scale: 0.94 }} onClick={() => { onDate(key); onTime('') }} className={`shrink-0 w-[72px] rounded-2xl border flex flex-col items-center justify-center py-3 transition-all ${active ? 'bg-accent border-accent text-ink shadow-glow' : 'bg-surface/60 border-white/10 text-white hover:border-white/25'}`}>
+              <span className={`text-[10px] uppercase tracking-wider ${active ? 'text-ink/80' : 'text-zincsoft'}`}>{today ? 'Сегодня' : WEEKDAYS[d.getDay()]}</span>
+              <span className="font-display font-extrabold text-lg leading-tight mt-0.5">{d.getDate()}</span>
+              <span className={`text-[10px] ${active ? 'text-ink/80' : 'text-zincsoft'}`}>{MONTHS[d.getMonth()]}</span>
             </motion.button>
           )
         })}
       </div>
 
-      {/* Slots */}
-      <div className="mt-5">
+      <div className="mt-5 flex-1 overflow-y-auto">
         <div className="flex items-center justify-between mb-2">
           <div className="text-[11px] uppercase tracking-[0.16em] text-zincsoft font-medium">Время</div>
           {date && <div className="text-[11px] text-zincsoft">{fmtDate(new Date(date))}</div>}
@@ -101,26 +84,11 @@ export default function Screen4Time({ config, date, time, onDate, onTime, onNext
             Сначала выберите дату
           </div>
         ) : (
-          <motion.div
-            initial="hidden"
-            animate="show"
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.025 } } }}
-            className="grid grid-cols-3 gap-2.5"
-          >
+          <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.025 } } }} className="grid grid-cols-3 gap-2.5 pb-4">
             {slots.map((t) => {
               const active = time === t
               return (
-                <motion.button
-                  key={t}
-                  variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => onTime(t)}
-                  className={`h-12 rounded-xl text-sm font-semibold border transition-all ${
-                    active
-                      ? 'bg-accent border-accent text-white shadow-glow'
-                      : 'bg-surface/60 border-white/10 text-white hover:border-white/25'
-                  }`}
-                >
+                <motion.button key={t} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} whileTap={{ scale: 0.95 }} onClick={() => onTime(t)} className={`h-12 rounded-xl text-sm font-semibold border transition-all ${active ? 'bg-accent border-accent text-ink shadow-glow' : 'bg-surface/60 border-white/10 text-white hover:border-white/25'}`}>
                   {t}
                 </motion.button>
               )
@@ -129,17 +97,8 @@ export default function Screen4Time({ config, date, time, onDate, onTime, onNext
         )}
       </div>
 
-      <div className="mt-auto pt-6">
-        <motion.button
-          whileTap={{ scale: 0.96 }}
-          disabled={!date || !time}
-          onClick={onNext}
-          className={`w-full h-14 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 transition-all ${
-            date && time
-              ? 'bg-accent text-white shadow-glow'
-              : 'bg-white/[0.06] text-white/30 cursor-not-allowed'
-          }`}
-        >
+      <div className="shrink-0 pt-4">
+        <motion.button whileTap={{ scale: 0.96 }} disabled={!date || !time} onClick={onNext} className={`w-full h-14 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 transition-all ${date && time ? 'bg-accent text-ink shadow-glow' : 'bg-white/[0.06] text-white/30 cursor-not-allowed'}`}>
           Продолжить
           <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
         </motion.button>

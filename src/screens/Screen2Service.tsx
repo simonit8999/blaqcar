@@ -76,27 +76,22 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
     window.__serviceImages = imgs
   }, [config.services])
 
-  // Берем картинку для фона (например, третью услугу с BMW)
   const bgImage = config.services[2]?.image || config.hero_image
 
   return (
-    /* ГЛАВНЫЙ ФИКС: bg-ink (черный фон) перекрывает Audi */
     <div className="flex flex-col h-full overflow-hidden relative bg-ink">
       
-      {/* ФОН ДЛЯ ЭТОГО ЭКРАНА (BMW) */}
       <div className="absolute inset-0 z-0">
         <img src={bgImage} alt="" className="w-full h-full object-cover opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-ink/95 to-ink" />
       </div>
 
-      {/* Контент поверх фона */}
       <div className="relative z-10 flex flex-col h-full">
         <div className="pt-2 pb-4 px-5 shrink-0">
           <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">Выберите услугу</h1>
           <p className="mt-1.5 text-white/45 text-sm">Всё, что нужно вашему авто — в одном месте</p>
         </div>
 
-        {/* Контейнер с fade-маской для красивого скролла */}
         <div className="flex-1 overflow-y-auto px-5 pb-4 [mask-image:linear-gradient(to_bottom,transparent,black_16px,black_calc(100%-16px),transparent)]">
           <div className="flex flex-col gap-4 pb-2">
             {config.services.map((s) => (
@@ -110,7 +105,6 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
           </div>
         </div>
 
-        {/* Футер с кнопкой */}
         <div className="shrink-0 p-5 pb-safe bg-ink/80 backdrop-blur-md border-t border-white/5">
           <motion.button
             type="button"

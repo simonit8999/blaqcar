@@ -82,13 +82,15 @@ export default function App() {
       {/* HERO ЭКРАН (z-0) */}
       <div 
         className="absolute inset-0 z-0" 
-        inert={step !== 0} // <--- ИСПРАВЛЕНО
+        inert={step !== 0}
       >
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>
 
       {/* ЭКРАНЫ УСЛУГ (z-10) */}
-      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden bg-ink"> 
+        {/* ^^^ ДОБАВИЛИ bg-ink сюда, чтобы подложка была черной */}
+        
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           {step !== 0 && (
             <motion.div
@@ -99,7 +101,7 @@ export default function App() {
               animate="center"
               exit="exit"
               transition={transition}
-              /* ВАЖНО: bg-ink перекрывает Audi */
+              /* У каждого экрана тоже есть bg-ink */
               className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto overflow-hidden"
             >
               <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />

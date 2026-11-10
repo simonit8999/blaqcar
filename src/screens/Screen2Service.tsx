@@ -23,24 +23,25 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
   }, [config.services])
 
   return (
-    <div className="flex flex-col h-full bg-ink overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       
-      {/* Шапка с полупрозрачным фоном */}
-      <div className="pt-2 pb-4 px-5 shrink-0 bg-ink/90 backdrop-blur-md z-10 relative">
+      {/* Шапка: полупрозрачная с блюром */}
+      <div className="pt-2 pb-4 px-5 shrink-0 bg-ink/80 backdrop-blur-md z-10 relative border-b border-white/5">
         <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">Выберите услугу</h1>
         <p className="mt-1.5 text-zincsoft text-sm">Всё, что нужно вашему авто — в одном месте</p>
       </div>
 
+      {/* Список услуг: прозрачный фон */}
       <div className="flex-1 overflow-y-auto px-5 pb-4 bg-transparent">
         <div className="flex flex-col gap-3.5">
           {config.services.map((s) => {
             const active = selected?.id === s.id
             return (
               <button
-                type="button" // <--- ВАЖНО
+                type="button"
                 key={s.id}
                 onClick={() => onSelect(s)}
-                className="relative overflow-hidden rounded-2xl border text-left cursor-pointer"
+                className="relative overflow-hidden rounded-2xl border text-left cursor-pointer bg-ink/60 backdrop-blur-sm"
                 style={{
                   minHeight: 120,
                   borderColor: active ? 'var(--accent)' : 'rgba(255,255,255,0.1)',
@@ -52,12 +53,12 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                   <img 
                     src={s.image} 
                     alt="" 
-                    className="w-full h-full object-cover" 
+                    className="w-full h-full object-cover opacity-40" // Сделали картинку полупрозрачной, чтобы фон просвечивал
                     style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }} 
                     draggable={false}
                     loading="eager"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/80 to-ink/20" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
                 </div>
 
@@ -85,10 +86,10 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
         </div>
       </div>
 
-      {/* Подвал с полупрозрачным фоном */}
-      <div className="shrink-0 p-5 pb-safe bg-ink/90 backdrop-blur-md border-t border-white/5 z-10 relative">
+      {/* Подвал: полупрозрачный с блюром */}
+      <div className="shrink-0 p-5 pb-safe bg-ink/80 backdrop-blur-md border-t border-white/5 z-10 relative">
         <motion.button
-          type="button" // <--- ВАЖНО
+          type="button"
           whileTap={{ scale: 0.96 }}
           disabled={!selected}
           onClick={onNext}

@@ -71,3 +71,13 @@ img {
   background-color: #050505;
   isolation: isolate;
 }
+
+/* В самый конец файла */
+::selection { background: var(--accent); color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

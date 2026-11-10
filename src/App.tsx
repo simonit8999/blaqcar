@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfig } from './hooks/useConfig'
 import { usePwaTheme } from './hooks/usePwa'
@@ -26,7 +26,6 @@ const initialBooking: BookingData = {
   time: null,
 }
 
-// Анимация слайдов для экранов услуг (шаги 1-4)
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
@@ -46,6 +45,30 @@ export default function App() {
   const [booking, setBooking] = useState<BookingData>(initialBooking)
 
   usePwaTheme('#050505')
+
+  // 🔥 ПРАВИЛЬНАЯ ПРЕДЗАГРУЗКА КАРТИНОК (без скрытого div)
+  useEffect(() => {
+    if (!config) return
+
+    const images: HTMLImageElement[] = []
+    
+    const hero = new Image()
+    hero.src = config.hero_image
+    images.push(hero)
+
+    config.services.forEach((s) => {
+      const img = new Image()
+      img.src = s.image
+      images.push(img)
+    })
+
+    // Сохраняем ссылки в window, чтобы GC их не убил
+    ;(window as any).__preloadedImages = images
+
+    return () => {
+      ;(window as any).__preloadedImages = null
+    }
+  }, [config])
 
   if (error) {
     return (
@@ -78,14 +101,6 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* Скрытый прелоадер (с crossOrigin и decoding="sync" для удержания в памяти) */}
-      <div className="hidden" aria-hidden="true">
-        <img src={config.hero_image} alt="" fetchPriority="high" decoding="sync" crossOrigin="anonymous" />
-        {config.services.map((s) => (
-          <img key={s.id} src={s.image} alt="" decoding="sync" crossOrigin="anonymous" />
-        ))}
-      </div>
-
       {/* 1. HERO ЭКРАН: Всегда в DOM, на самом нижнем слое (z-0) */}
       <div 
         className="absolute inset-0 z-0" 
@@ -113,29 +128,13 @@ export default function App() {
 
               <div className="relative flex-1 overflow-hidden">
                 {step === 1 && (
-                  <Screen2Service
-                    config={config}
-                    selected={booking.service}
-                    onSelect={selectService}
-                    onNext={() => go(2)}
-                  />
+                  <Screen2Service config={config} selected={booking.service} onSelect={selectService} onNext={() => go(2)} />
                 )}
                 {step === 2 && (
-                  <Screen3Details
-                    data={booking}
-                    onChange={update}
-                    onNext={() => go(3)}
-                  />
+                  <Screen3Details data={booking} onChange={update} onNext={() => go(3)} />
                 )}
                 {step === 3 && (
-                  <Screen4Time
-                    config={config}
-                    date={booking.date}
-                    time={booking.time}
-                    onDate={(d) => update({ date: d })}
-                    onTime={(t) => update({ time: t })}
-                    onNext={() => go(4)}
-                  />
+                  <Screen4Time config={config} date={booking.date} time={booking.time} onDate={(d) => update({ date: d })} onTime={(t) => update({ time: t })} onNext={() => go(4)} />
                 )}
                 {step === 4 && <Screen5Confirm config={config} data={booking} />}
               </div>

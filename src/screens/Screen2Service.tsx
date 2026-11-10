@@ -16,16 +16,13 @@ const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transiti
 
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
   return (
-    /* Главный контейнер: фиксированная высота экрана, запрет прокрутки всего экрана */
     <div className="flex flex-col h-full bg-ink overflow-hidden">
       
-      {/* Шапка (не скроллится) */}
       <div className="pt-2 pb-4 px-5 shrink-0">
         <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">Выберите услугу</h1>
         <p className="mt-1.5 text-zincsoft text-sm">Всё, что нужно вашему авто — в одном месте</p>
       </div>
 
-      {/* Скроллируемый список услуг */}
       <div className="flex-1 overflow-y-auto px-5 pb-4">
         <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-3.5">
           {config.services.map((s) => {
@@ -42,7 +39,14 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                 style={{ minHeight: 120 }}
               >
                 <div className="absolute inset-0 -z-10">
-                  <img src={s.image} alt="" className="w-full h-full object-cover" draggable={false} />
+                  {/* ФИКС КАРТИНОК: translateZ и backface-hidden не дают браузеру выгружать их из памяти */}
+                  <img 
+                    src={s.image} 
+                    alt="" 
+                    className="w-full h-full object-cover backface-hidden" 
+                    style={{ transform: 'translateZ(0)' }}
+                    draggable={false} 
+                  />
                   <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
                 </div>
@@ -50,7 +54,6 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                 <div className="relative p-4 flex flex-col justify-between min-h-[120px]">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-display font-bold text-lg uppercase tracking-tight leading-tight">{s.name}</h3>
-                    {/* Кружок выбора с контрастной галочкой */}
                     <div className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
                         active ? 'bg-accent text-ink shadow-glow' : 'bg-white/10 border border-white/15 text-transparent'
                       }`}>
@@ -72,7 +75,6 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
         </motion.div>
       </div>
 
-      {/* Зафиксированная кнопка "Далее" внизу */}
       <div className="shrink-0 p-5 pb-safe bg-ink border-t border-white/5">
         <motion.button
           whileTap={{ scale: 0.96 }}

@@ -46,28 +46,20 @@ export default function App() {
 
   usePwaTheme('#050505')
 
-  // 🔥 ПРАВИЛЬНАЯ ПРЕДЗАГРУЗКА КАРТИНОК (без скрытого div)
+  // Предзагрузка картинок (оставляем как было)
   useEffect(() => {
     if (!config) return
-
     const images: HTMLImageElement[] = []
-    
     const hero = new Image()
     hero.src = config.hero_image
     images.push(hero)
-
     config.services.forEach((s) => {
       const img = new Image()
       img.src = s.image
       images.push(img)
     })
-
-    // Сохраняем ссылки в window, чтобы GC их не убил
     ;(window as any).__preloadedImages = images
-
-    return () => {
-      ;(window as any).__preloadedImages = null
-    }
+    return () => { ;(window as any).__preloadedImages = null }
   }, [config])
 
   if (error) {
@@ -101,7 +93,7 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {/* 1. HERO ЭКРАН: Всегда в DOM, на самом нижнем слое (z-0) */}
+      {/* Hero-экран (всегда в DOM, на самом нижнем слое) */}
       <div 
         className="absolute inset-0 z-0" 
         style={{ pointerEvents: step === 0 ? 'auto' : 'none' }}
@@ -109,7 +101,7 @@ export default function App() {
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>
 
-      {/* 2. КОНТЕЙНЕР ДЛЯ УСЛУГ: Поверх Hero (z-10) */}
+      {/* Контейнер с экранами услуг (поверх Hero) */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           {step !== 0 && (
@@ -121,7 +113,8 @@ export default function App() {
               animate="center"
               exit="exit"
               transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
-              className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto"
+              /* Убрали bg-ink, чтобы просвечивал фон BMW */
+              className="absolute inset-0 w-full h-full flex flex-col pointer-events-auto bg-transparent"
             >
               <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
               <ProgressBar step={step} total={4} />

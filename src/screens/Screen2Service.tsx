@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Check, ArrowRight } from 'lucide-react'
 import type { AppConfig, Service } from '../types'
@@ -13,12 +12,6 @@ interface Props {
 const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
 
 export default function Screen2Service({ config, selected, onSelect, onNext }: Props) {
-  // ЛОГ ДЛЯ ПРОВЕРКИ ГИПОТЕЗЫ
-  useEffect(() => {
-    console.log('Screen2Service Mounted');
-    return () => console.log('Screen2Service Unmounted');
-  }, []);
-
   return (
     <div className="flex flex-col h-full bg-ink overflow-hidden">
       <div className="pt-2 pb-4 px-5 shrink-0">
@@ -31,26 +24,25 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
           {config.services.map((s) => {
             const active = selected?.id === s.id
             return (
-              <motion.button
+              <button
                 key={s.id}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => onSelect(s)}
-                className={`relative overflow-hidden rounded-2xl border text-left transition-colors duration-200 ${
-                  active ? 'border-accent shadow-glow' : 'border-white/10 hover:border-white/20'
-                }`}
-                style={{ minHeight: 120 }}
+                className="relative overflow-hidden rounded-2xl border text-left"
+                style={{
+                  minHeight: 120,
+                  borderColor: active ? 'var(--accent)' : 'rgba(255,255,255,0.1)',
+                  boxShadow: active ? '0 0 20px rgba(229,229,229,0.3)' : 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s'
+                }}
               >
                 <div className="absolute inset-0 -z-10">
                   <img 
                     src={s.image} 
                     alt="" 
                     className="w-full h-full object-cover" 
-                    style={{ 
-                      transform: 'translateZ(0)', 
-                      backfaceVisibility: 'hidden',
-                      willChange: 'transform'
-                    }} 
-                    draggable={false} 
+                    style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }} 
+                    draggable={false}
+                    loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/40" />
@@ -74,7 +66,7 @@ export default function Screen2Service({ config, selected, onSelect, onNext }: P
                     <div className="font-display font-extrabold text-xl tracking-tight text-white">{fmt(s.price)}</div>
                   </div>
                 </div>
-              </motion.button>
+              </button>
             )
           })}
         </div>

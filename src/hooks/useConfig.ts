@@ -6,16 +6,8 @@ export function useConfig() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Определяем клиента по адресу сайта
-    const host = window.location.hostname;
-    let clientName = host.split('.')[0]; 
-    
-    // Для локальной разработки (если запускаешь на компьютере)
-    if (clientName === 'localhost' || clientName === '127') {
-      clientName = 'blaqcar';
-    }
-
-    fetch(`/clients/${clientName}.json`, { cache: 'no-store' })
+    // ЖЕСТКО БЕРЕМ НУЖНЫЙ ФАЙЛ
+    fetch(`/clients/blaqcar-app.json`, { cache: 'no-store' })
       .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
       .then((data: AppConfig) => {
         setConfig(data)

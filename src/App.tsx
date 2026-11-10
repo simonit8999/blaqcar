@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useConfig } from './hooks/useConfig'
 import { usePwaTheme } from './hooks/usePwa'
 import Header from './components/Header'
 import ProgressBar from './components/ProgressBar'
-import StepTransition from './components/StepTransition'
 
 import Screen1Hero from './screens/Screen1Hero'
 import Screen2Service from './screens/Screen2Service'
@@ -25,6 +24,22 @@ const initialBooking: BookingData = {
   comment: '',
   date: null,
   time: null,
+}
+
+// ВАРИАНТЫ АНИМАЦИИ ДЛЯ СЛАЙДОВ
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? '-30%' : '100%',
+    opacity: 0,
+  }),
 }
 
 export default function App() {
@@ -66,7 +81,7 @@ export default function App() {
   return (
     <div className="relative min-h-[100dvh] bg-ink text-white overflow-hidden">
       
-      {/* Скрытый прелоадер для всех картинок */}
+      {/* Скрытый прелоадер */}
       <div className="hidden" aria-hidden="true">
         <img src={config.hero_image} alt="" fetchPriority="high" decoding="sync" />
         {config.services.map((s) => (
@@ -74,41 +89,42 @@ export default function App() {
         ))}
       </div>
 
-      {/* HERO SCREEN (z-0) - всегда смонтирован */}
-      <div
-        className="absolute inset-0 w-full"
-        style={{
-          zIndex: 0,
-          minHeight: '100dvh',
-          pointerEvents: step === 0 ? 'auto' : 'none',
-        }}
-        aria-hidden={step !== 0}
-      >
-        <Screen1Hero
-          config={config}
-          onStart={() => go(1)}
-        />
-      </div>
+      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+        
+        {/* ЭКРАН 0 (Hero) */}
+        {step === 0 && (
+          <motion.div
+            key="hero"
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.4 }}
+            className="absolute inset-0 w-full bg-ink"
+            style={{ minHeight: '100dvh' }}
+          >
+            <Screen1Hero config={config} onStart={() => go(1)} />
+          </motion.div>
+        )}
 
-      {/* WIZARD OVERLAY (z-50) - уезжает вниз при выходе */}
-      {step !== 0 && (
-        <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0 w-full bg-ink flex flex-col"
-          style={{
-            zIndex: 50,
-            minHeight: '100dvh',
-          }}
-        >
-          <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
-          <ProgressBar step={step} total={4} />
+        {/* ЭКРАНЫ 1-4 (Wizard) */}
+        {step !== 0 && (
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'tween', ease: [0.32, 0.72, 0, 1], duration: 0.4 }}
+            className="absolute inset-0 w-full flex flex-col bg-ink"
+            style={{ minHeight: '100dvh' }}
+          >
+            <Header title={headerTitles[step]} onBack={() => go((step - 1) as Step)} />
+            <ProgressBar step={step} total={4} />
 
-          <div className="relative flex-1 overflow-hidden">
-            {/* Убрали AnimatePresence, просто рендерим текущий шаг */}
-            <div className="absolute inset-0 w-full h-full flex flex-col">
+            <div className="relative flex-1 overflow-hidden">
               {step === 1 && (
                 <Screen2Service
                   config={config}
@@ -136,9 +152,9 @@ export default function App() {
               )}
               {step === 4 && <Screen5Confirm config={config} data={booking} />}
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

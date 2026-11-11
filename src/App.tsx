@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useConfig } from './hooks/useConfig'
 import { usePwaTheme } from './hooks/usePwa'
 import Header from './components/Header'
@@ -27,9 +28,22 @@ const initialBooking: BookingData = {
 
 const HEADER_TITLES: Record<number, string> = { 0: '', 1: 'Услуга', 2: 'Данные', 3: 'Время', 4: 'Подтверждение' }
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+  }),
+  center: { x: 0 },
+  exit: (direction: number) => ({
+    x: direction > 0 ? '-100%' : '100%',
+  }),
+}
+
+const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.4 }
+
 export default function App() {
   const { config, error } = useConfig()
   const [step, setStep] = useState<Step>(0)
+  const [direction, setDirection] = useState<1 | -1>(1)
   const [booking, setBooking] = useState<BookingData>(initialBooking)
 
   usePwaTheme('#050505')
@@ -52,36 +66,58 @@ export default function App() {
     )
   }
 
-  const go = (next: Step) => setStep(next)
+  const go = (next: Step) => {
+    setDirection(next > step ? 1 : -1)
+    setStep(next)
+  }
+
   const update = (patch: Partial<BookingData>) => setBooking((b) => ({ ...b, ...patch }))
   const selectService = (s: Service) => update({ service: s })
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      {step === 0 && (
+      {/* HERO ЭКРАН (Audi) - Всегда на заднем плане (z-0) */}
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{ pointerEvents: step === 0 ? 'auto' : 'none' }}
+      >
         <Screen1Hero config={config} onStart={() => go(1)} />
-      )}
+      </div>
 
-      {step !== 0 && (
-        <div className="absolute inset-0 w-full h-full flex flex-col bg-ink">
-          <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />
-          <ProgressBar step={step} total={4} />
+      {/* ЭКРАНЫ УСЛУГ (z-10) - С анимацией и непрозрачным фоном */}
+      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden bg-ink">
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
+          {step !== 0 && (
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={transition}
+              className="absolute inset-0 w-full h-full flex flex-col bg-ink pointer-events-auto overflow-hidden"
+            >
+              <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />
+              <ProgressBar step={step} total={4} />
 
-          <div className="relative flex-1 overflow-hidden">
-            {step === 1 && (
-              <Screen2Service config={config} selected={booking.service} onSelect={selectService} onNext={() => go(2)} />
-            )}
-            {step === 2 && (
-              <Screen3Details data={booking} onChange={update} onNext={() => go(3)} />
-            )}
-            {step === 3 && (
-              <Screen4Time config={config} date={booking.date} time={booking.time} onDate={(d) => update({ date: d })} onTime={(t) => update({ time: t })} onNext={() => go(4)} />
-            )}
-            {step === 4 && <Screen5Confirm config={config} data={booking} />}
-          </div>
-        </div>
-      )}
+              <div className="relative flex-1 overflow-hidden">
+                {step === 1 && (
+                  <Screen2Service config={config} selected={booking.service} onSelect={selectService} onNext={() => go(2)} />
+                )}
+                {step === 2 && (
+                  <Screen3Details data={booking} onChange={update} onNext={() => go(3)} />
+                )}
+                {step === 3 && (
+                  <Screen4Time config={config} date={booking.date} time={booking.time} onDate={(d) => update({ date: d })} onTime={(t) => update({ time: t })} onNext={() => go(4)} />
+                )}
+                {step === 4 && <Screen5Confirm config={config} data={booking} />}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

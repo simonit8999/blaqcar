@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { ArrowRight, Car, Hash, User, MessageSquare, Phone } from 'lucide-react'
 import type { BookingData } from '../types'
 
@@ -34,11 +33,8 @@ export default function Screen3Details({ data, onChange, onNext }: Props) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-4">
-        {/* Убрали staggerChildren, теперь форма появляется целиком */}
-        <motion.form 
-          initial={{ opacity: 0, y: 10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.3 }}
+        {/* Убрали staggerChildren, форма появляется целиком */}
+        <form 
           className="flex flex-col gap-3.5" 
           onSubmit={(e) => { e.preventDefault(); if (valid) onNext() }}
         >
@@ -71,7 +67,7 @@ export default function Screen3Details({ data, onChange, onNext }: Props) {
             </div>
             <textarea value={data.comment} onChange={(e) => onChange({ comment: e.target.value })} placeholder="Царапина на двери, нужна химчистка" rows={3} className="w-full bg-transparent outline-none text-[15px] resize-none placeholder:text-white/25" />
           </div>
-        </motion.form>
+        </form>
       </div>
 
       <div className="shrink-0 p-5 pb-safe bg-ink border-t border-white/5">

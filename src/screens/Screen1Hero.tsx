@@ -48,7 +48,15 @@ export default function Screen1Hero({ config, onStart }: Props) {
           {config.hero_subtitle}
         </motion.p>
 
-        <motion.button initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} whileTap={{ scale: 0.96 }} onClick={onStart} className="mt-8 group relative w-full h-14 rounded-full bg-accent text-ink font-semibold text-[15px] flex items-center justify-center gap-2 shadow-glow active:shadow-glowlg transition-shadow">
+        <motion.button 
+          initial={{ opacity: 0, y: 24 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.6, delay: 0.4 }} 
+          whileTap={{ scale: 0.96 }} 
+          onClick={onStart} 
+          style={{ WebkitTapHighlightColor: 'transparent' }}
+          className="mt-8 group relative w-full h-14 rounded-full bg-accent text-ink font-semibold text-[15px] flex items-center justify-center gap-2 shadow-glow active:shadow-glowlg transition-shadow"
+        >
           <span>Записаться</span>
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
         </motion.button>

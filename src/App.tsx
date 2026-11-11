@@ -31,14 +31,16 @@ const HEADER_TITLES: Record<number, string> = { 0: '', 1: 'Услуга', 2: 'Д
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? '100%' : '-100%',
+    opacity: 0.6,
   }),
-  center: { x: 0 },
+  center: { x: 0, opacity: 1 },
   exit: (direction: number) => ({
     x: direction > 0 ? '-100%' : '100%',
+    opacity: 0.6,
   }),
 }
 
-const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.4 }
+const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.42 }
 
 export default function App() {
   const { config, error } = useConfig()
@@ -85,7 +87,7 @@ export default function App() {
         <Screen1Hero config={config} onStart={() => go(1)} />
       </div>
 
-      {/* ЭКРАНЫ УСЛУГ (z-10) - С анимацией и непрозрачным фоном */}
+      {/* ЭКРАНЫ УСЛУГ (z-10) */}
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden bg-ink">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           {step !== 0 && (

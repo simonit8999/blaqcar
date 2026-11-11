@@ -28,17 +28,34 @@ const initialBooking: BookingData = {
 
 const HEADER_TITLES: Record<number, string> = { 0: '', 1: 'Услуга', 2: 'Данные', 3: 'Время', 4: 'Подтверждение' }
 
-const slideVariants = {
+// 🔥 НОВЫЕ ВАРИАНТЫ АНИМАЦИИ (Spring + Parallax)
+const screenVariants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? '100%' : '-100%',
+    x: direction > 0 ? '100%' : '-50%',
+    opacity: direction > 0 ? 1 : 0.5,
+    scale: direction > 0 ? 1 : 0.95,
   }),
-  center: { x: 0 },
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    zIndex: 1,
+  },
   exit: (direction: number) => ({
-    x: direction > 0 ? '-100%' : '100%',
+    x: direction > 0 ? '-30%' : '100%',
+    opacity: direction > 0 ? 0.5 : 1,
+    scale: direction > 0 ? 0.95 : 1,
+    zIndex: 0,
   }),
 }
 
-const transition = { type: 'tween' as const, ease: [0.32, 0.72, 0, 1] as const, duration: 0.4 }
+// 🔥 SPRING ТРАНЗИЦИЯ (Плавная и быстрая)
+const transition = { 
+  type: 'spring', 
+  stiffness: 300, 
+  damping: 30, 
+  mass: 0.8 
+}
 
 export default function App() {
   const { config, error } = useConfig()
@@ -77,17 +94,19 @@ export default function App() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-ink text-white">
       
-      <AnimatePresence mode="wait" initial={false} custom={direction}>
+      <AnimatePresence initial={false} custom={direction}>
         
         {/* ЭКРАН 0 (Hero) */}
         {step === 0 && (
           <motion.div
             key="hero"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 z-0 bg-ink"
+            custom={direction}
+            variants={screenVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={transition}
+            className="absolute inset-0 bg-ink"
           >
             <Screen1Hero config={config} onStart={() => go(1)} />
           </motion.div>
@@ -98,12 +117,12 @@ export default function App() {
           <motion.div
             key={step}
             custom={direction}
-            variants={slideVariants}
+            variants={screenVariants}
             initial="enter"
             animate="center"
             exit="exit"
             transition={transition}
-            className="absolute inset-0 z-10 w-full h-full flex flex-col bg-ink"
+            className="absolute inset-0 w-full h-full flex flex-col bg-ink origin-left"
           >
             <Header title={HEADER_TITLES[step]} onBack={() => go((step - 1) as Step)} />
             <ProgressBar step={step} total={4} />

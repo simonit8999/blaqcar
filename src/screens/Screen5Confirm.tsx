@@ -7,17 +7,17 @@ interface Props {
   data: BookingData
 }
 
+const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
+const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+
+function fmtDateLong(d: string | null) {
+  if (!d) return '—'
+  const dt = new Date(d)
+  const wd = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][dt.getDay()]
+  return `${wd}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}`
+}
+
 export default function Screen5Confirm({ config, data }: Props) {
-  const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽'
-  const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
-
-  const fmtDateLong = (d: string | null) => {
-    if (!d) return '—'
-    const dt = new Date(d)
-    const wd = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'][dt.getDay()]
-    return `${wd}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}`
-  }
-
   const total = data.service?.price ?? 0
 
   const handleSend = () => {
@@ -41,7 +41,10 @@ export default function Screen5Confirm({ config, data }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-[100dvh] overflow-hidden bg-ink">
+    /* Главный контейнер: фиксируем высоту экрана */
+    <div className="flex flex-col h-full bg-ink overflow-hidden">
+      
+      {/* Шапка (не скроллится) */}
       <div className="pt-2 pb-5 px-5 shrink-0">
         <h1 className="font-display font-black text-[28px] leading-tight tracking-tight uppercase">
           Всё верно?
@@ -49,7 +52,8 @@ export default function Screen5Confirm({ config, data }: Props) {
         <p className="mt-1.5 text-zincsoft text-sm">Проверьте детали перед отправкой</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 pb-6">
+      {/* Скроллируемая карточка с данными */}
+      <div className="flex-1 overflow-y-auto px-5 pb-4">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -78,8 +82,10 @@ export default function Screen5Confirm({ config, data }: Props) {
         </motion.div>
       </div>
 
+      {/* Кнопка (всегда внизу, не скроллится) */}
       <div className="shrink-0 p-5 pb-safe bg-ink border-t border-white/5">
         <motion.button
+          type="button"
           whileTap={{ scale: 0.96 }}
           onClick={handleSend}
           className="w-full h-14 rounded-full bg-accent text-ink font-semibold text-[15px] flex items-center justify-center gap-2 shadow-glow active:shadow-glowlg transition-shadow"
